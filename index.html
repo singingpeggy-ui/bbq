@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>烤肉小店 BBQ Mini Game v2</title>
+<style>
+  :root{
+    --bg:#231510; --panel:#fff6e8; --ink:#3c2418; --muted:#8a6b55;
+    --accent:#e85d2a; --accent2:#ffb84d; --ok:#2d9b5f; --bad:#b7332b;
+    --dark:#442719; --lock:#a99a8d;
+  }
+  *{box-sizing:border-box; user-select:none}
+  button,.itemBtn,.slot,.plateSlot{touch-action:manipulation; -webkit-tap-highlight-color:transparent}
+  body{margin:0; font-family:"Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:radial-gradient(circle at top,#5c2c19 0,#231510 58%,#130b08 100%); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px}
+  .game{width:min(1180px,100%); background:#f9e7cc; border:6px solid #2b160f; border-radius:22px; box-shadow:0 18px 60px #0009; overflow:hidden}
+  header{background:linear-gradient(90deg,#2b160f,#5b2b1a); color:#fff8e8; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  header h1{margin:0; font-size:24px; letter-spacing:.04em}
+  .stats{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .pill{background:#fff2; border:1px solid #ffffff30; border-radius:999px; padding:7px 12px; font-weight:700}
+  main{display:grid; grid-template-columns: 1.1fr .9fr; gap:16px; padding:16px}
+  .panel{background:var(--panel); border:4px solid #7a4528; border-radius:18px; box-shadow:inset 0 0 0 2px #fff3; padding:14px}
+  .customer{min-height:126px; display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; background:linear-gradient(180deg,#fffaf0,#ffe4b8); border-color:#a75c2e}
+  .face{width:78px; height:78px; background:#ffd9a4; border:4px solid #59331f; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center; font-size:42px; box-shadow:0 4px 0 #0002}
+  .order h2{margin:0 0 8px; font-size:21px}.orderList{display:flex; gap:8px; flex-wrap:wrap}.tag{background:#fff; border:2px solid #c98954; border-radius:12px; padding:7px 10px; font-weight:800; display:inline-flex; gap:5px; align-items:center}.patience{height:12px; background:#ead4b8; border-radius:99px; overflow:hidden; border:1px solid #8a6549; margin-top:10px}.patience span{display:block; height:100%; background:linear-gradient(90deg,#57b96f,#ffcf4a,#dc4438); width:100%; transition:width .2s linear}.serveBox{display:flex; flex-direction:column; gap:8px}.btn{border:0; border-radius:13px; background:linear-gradient(180deg,#ff8b3d,#df5724); color:white; font-weight:900; padding:11px 14px; cursor:pointer; box-shadow:0 4px 0 #8e321c; font-size:16px}.btn:active{transform:translateY(3px); box-shadow:0 1px 0 #8e321c}.btn.secondary{background:linear-gradient(180deg,#7f5138,#4b2a1c); box-shadow:0 4px 0 #25120b}.btn:disabled{background:#aaa; box-shadow:0 4px 0 #777; cursor:not-allowed}.layout{display:grid; grid-template-columns:1fr; gap:14px}.grill{height:390px; background:linear-gradient(180deg,#333,#111); border-radius:22px; border:8px solid #5b321f; position:relative; overflow:hidden}.fire{position:absolute; inset:auto 0 0; height:88px; background:linear-gradient(0deg,#ff3b00,#ff9a00 55%,transparent); opacity:.55; filter:blur(4px)}.bars{position:absolute; inset:28px 18px 55px; display:grid; grid-template-columns:repeat(6,1fr); gap:10px}.bar{background:linear-gradient(90deg,#1b1b1b,#696969,#1d1d1d); border-radius:10px}.slots{position:absolute; inset:40px 28px 72px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr); gap:16px}.slot,.plateSlot{border:3px dashed #ffffff55; border-radius:16px; display:flex; align-items:center; justify-content:center; position:relative; min-height:120px; cursor:pointer}.slot:hover,.plateSlot:hover{outline:3px solid #fff5}.food{width:112px; height:92px; pointer-events:none; border-radius:20px; display:flex; align-items:center; justify-content:center; flex-direction:column; font-size:42px; cursor:pointer; position:relative; filter:drop-shadow(0 6px 3px #0005)}.food small{font-size:12px; background:#0009; color:white; padding:2px 6px; border-radius:99px; margin-top:2px}.food.raw{background:#ffd1c4}.food.cooked{background:#d67b37; animation:pulse 1s infinite}.food.burnt{background:#1e1b19; color:#ddd}.progress{position:absolute; left:12px; right:12px; bottom:8px; height:7px; background:#0007; border-radius:99px; overflow:hidden}.progress span{display:block; height:100%; background:#ffce55; width:0}.hint{font-size:13px; color:#ffe9c8; position:absolute; bottom:12px; left:20px; right:20px; text-align:center}.menuGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}.itemBtn{background:#fff; border:3px solid #b56a3b; border-radius:16px; padding:10px; display:grid; grid-template-columns:auto 1fr; gap:8px; align-items:center; cursor:pointer; min-height:76px}.itemBtn:hover{transform:translateY(-1px); box-shadow:0 4px 10px #0002}.itemBtn.locked{filter:grayscale(1); opacity:.65; cursor:pointer; border-color:#999}.itemBtn .emoji{font-size:36px}.itemBtn b{display:block}.itemBtn span{font-size:13px; color:var(--muted)}.itemBtn .unlock{grid-column:1/3; color:#8c3320; font-weight:800}.plate{min-height:190px; background:linear-gradient(180deg,#ffe8be,#ffd08b); border-color:#aa602e}.plateSlots{display:grid; grid-template-columns:repeat(5,1fr); gap:10px}.plateSlot{background:#fff6; min-height:104px; border-color:#a7724b80}.log{height:128px; overflow:auto; background:#2e1a12; color:#ffefcf; padding:10px; border-radius:12px; font-size:14px; line-height:1.5}.rightCol{display:flex; flex-direction:column; gap:14px}.toast{position:fixed; left:50%; top:20px; transform:translateX(-50%); background:#22130d; color:#fff4dc; border:2px solid #ffbd60; border-radius:999px; padding:10px 18px; font-weight:800; opacity:0; pointer-events:none; transition:.25s; z-index:10}.toast.show{opacity:1; top:32px}@keyframes pulse{50%{transform:scale(1.06)}}
+  @media(max-width:900px){main{grid-template-columns:1fr}.grill{height:340px}.slots{grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,1fr)}.menuGrid{grid-template-columns:1fr}.customer{grid-template-columns:1fr; text-align:center}.serveBox{flex-direction:row; justify-content:center}.orderList{justify-content:center}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="game">
+  <header>
+    <h1>🔥 烤肉小店</h1>
+    <div class="stats">
+      <div class="pill">金錢：$<span id="money">0</span></div>
+      <div class="pill">關卡：<span id="level">1</span></div>
+      <div class="pill">滿意度：<span id="rep">100</span></div>
+      <button class="btn secondary" id="resetBtn">重新開始</button>
+    </div>
+  </header>
+  <main>
+    <section class="layout">
+      <div class="panel customer">
+        <div class="face" id="face">🙂</div>
+        <div class="order">
+          <h2 id="custName">客人來了！</h2>
+          <div class="orderList" id="orderList"></div>
+          <div class="patience"><span id="patienceBar"></span></div>
+        </div>
+        <div class="serveBox">
+          <button class="btn" id="serveBtn">出餐</button>
+          <button class="btn secondary" id="trashBtn">清空餐盤</button>
+        </div>
+      </div>
+      <div class="grill panel">
+        <div class="fire"></div><div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        <div class="slots" id="grillSlots"></div>
+        <div class="hint">點右側食材放上烤架。整格都可以點，熟了發光後再點即可放到餐盤；放太久會燒焦。</div>
+      </div>
+    </section>
+    <aside class="rightCol">
+      <div class="panel">
+        <h2 style="margin:0 0 10px">食材</h2>
+        <div class="menuGrid" id="menu"></div>
+      </div>
+      <div class="panel plate">
+        <h2 style="margin:0 0 10px">餐盤</h2>
+        <div class="plateSlots" id="plateSlots"></div>
+      </div>
+      <div class="panel">
+        <h2 style="margin:0 0 10px">紀錄</h2>
+        <div class="log" id="log"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+<script>
+const FOODS={
+  bacon:{name:'培根',emoji:'🥓',price:12,cook:4,burn:8,unlock:0},
+  sausage:{name:'香腸',emoji:'🌭',price:18,cook:6,burn:11,unlock:60},
+  steak:{name:'牛排',emoji:'🥩',price:35,cook:10,burn:16,unlock:160},
+  corn:{name:'玉米',emoji:'🌽',price:22,cook:8,burn:14,unlock:110},
+  shrimp:{name:'蝦子',emoji:'🦐',price:28,cook:5,burn:9,unlock:220}
+};
+const names=['趕時間的上班族','散步中的阿姨','飢餓的大叔','挑嘴的小哥','剛下課的學生','露營愛好者','吃宵夜的情侶'];
+const faces=['🙂','😋','🤠','😎','🥹','🤤','😐'];
+let money=0, level=1, rep=100, unlocked=['bacon'];
+let grill=Array(6).fill(null), plate=[]; let customer=null; let orderNo=0; let lastTick=Date.now();
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem('bbq-mini-save',JSON.stringify({money,level,rep,unlocked}))}
+function load(){try{const s=JSON.parse(localStorage.getItem('bbq-mini-save')); if(s){money=s.money||0;level=s.level||1;rep=s.rep||100;unlocked=s.unlocked||['bacon']}}catch(e){}}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1300)}
+function log(msg){$('log').innerHTML=`<div>・${msg}</div>`+$('log').innerHTML}
+function updateStats(){ $('money').textContent=money; $('level').textContent=level; $('rep').textContent=rep; save(); }
+function renderMenu(){const menu=$('menu'); menu.innerHTML=''; Object.entries(FOODS).forEach(([id,f])=>{const locked=!unlocked.includes(id); const el=document.createElement('div'); el.className='itemBtn'+(locked?' locked':''); el.innerHTML=`<div class="emoji">${f.emoji}</div><div><b>${f.name}</b><span>售價 $${f.price}｜烤 ${f.cook}s</span></div>${locked?`<div class="unlock">花 $${f.unlock} 解鎖</div>`:''}`; el.addEventListener('pointerup',()=> locked?unlockFood(id):addToGrill(id)); menu.appendChild(el);});}
+function renderGrill(){const box=$('grillSlots'); box.innerHTML=''; grill.forEach((item,i)=>{const slot=document.createElement('div'); slot.className='slot'; slot.dataset.slot=i; if(item){const f=FOODS[item.id]; const st=item.t>=f.burn?'burnt':item.t>=f.cook?'cooked':'raw'; const pct=Math.min(100,item.t/f.cook*100); slot.innerHTML=`<div class="food ${st}" title="點擊移到餐盤"><div>${f.emoji}</div><small>${st==='burnt'?'焦了':st==='cooked'?'熟了':'烤中'}</small><div class="progress"><span style="width:${pct}%"></span></div></div>`;} box.appendChild(slot);});}
+function renderPlate(){const box=$('plateSlots'); box.innerHTML=''; for(let i=0;i<5;i++){const slot=document.createElement('div'); slot.className='plateSlot'; slot.dataset.plate=i; const id=plate[i]; if(id){const f=FOODS[id]; slot.innerHTML=`<div class="food cooked"><div>${f.emoji}</div><small>${f.name}</small></div>`;} box.appendChild(slot);}}
+function addToGrill(id){const idx=grill.findIndex(x=>!x); if(idx<0){toast('烤架滿了');return} grill[idx]={id,t:0}; renderGrill();}
+function takeFromGrill(i){const item=grill[i]; if(!item)return; const f=FOODS[item.id]; if(item.t<f.cook){toast('還沒熟');return} if(item.t>=f.burn){grill[i]=null; rep=Math.max(0,rep-2); updateStats(); renderGrill(); log(`${f.name}燒焦丟掉了。`); return} if(plate.length>=5){toast('餐盤滿了');return} plate.push(item.id); grill[i]=null; renderGrill(); renderPlate(); log(`${f.name}放到餐盤。`)}
+function unlockFood(id){const f=FOODS[id]; if(money<f.unlock){toast(`錢不夠，還需要 $${f.unlock-money}`); return} money-=f.unlock; unlocked.push(id); level=Math.max(level,unlocked.length); updateStats(); renderMenu(); log(`解鎖新食材：${f.name}。`)}
+function makeOrder(){orderNo++; const pool=unlocked.slice(); let count=1; if(orderNo>3)count=2; if(orderNo>8)count=3; if(orderNo>15)count=Math.min(4,pool.length+1); count=Math.min(count,5); const order=[]; for(let i=0;i<count;i++){order.push(pool[Math.floor(Math.random()*pool.length)])} customer={name:names[Math.floor(Math.random()*names.length)],face:faces[Math.floor(Math.random()*faces.length)],order,patience:45+Math.max(0,3-count)*6}; renderCustomer(); log(`${customer.name}點餐了。`)}
+function renderCustomer(){if(!customer)return; $('face').textContent=customer.face; $('custName').textContent=customer.name; $('orderList').innerHTML=customer.order.map(id=>`<span class="tag">${FOODS[id].emoji} ${FOODS[id].name}</span>`).join(''); $('patienceBar').style.width=Math.max(0,customer.patience/55*100)+'%';}
+function canServe(){const temp=plate.slice(); for(const id of customer.order){const idx=temp.indexOf(id); if(idx<0)return false; temp.splice(idx,1);} return true;}
+function serve(){if(!customer)return; if(!canServe()){toast('餐點不對或不夠'); rep=Math.max(0,rep-3); updateStats(); return} for(const id of customer.order){plate.splice(plate.indexOf(id),1)} const earn=customer.order.reduce((s,id)=>s+FOODS[id].price,0); const tip=Math.ceil(customer.patience/8); money+=earn+tip; rep=Math.min(100,rep+2); updateStats(); renderPlate(); log(`成功出餐，收入 $${earn}，小費 $${tip}。`); makeOrder();}
+function tick(){const now=Date.now(), dt=(now-lastTick)/1000; lastTick=now; grill.forEach(item=>{if(item)item.t+=dt}); if(customer){customer.patience-=dt; if(customer.patience<=0){rep=Math.max(0,rep-8); updateStats(); log(`${customer.name}等太久離開了。`); makeOrder();}} renderGrill(); renderCustomer();}
+$('grillSlots').addEventListener('pointerup',e=>{const slot=e.target.closest('.slot'); if(!slot)return; takeFromGrill(Number(slot.dataset.slot));});
+$('plateSlots').addEventListener('pointerup',e=>{const slot=e.target.closest('.plateSlot'); if(!slot)return; const i=Number(slot.dataset.plate); if(plate[i]){plate.splice(i,1); renderPlate(); log('從餐盤拿掉一份餐點。')}});
+$('serveBtn').addEventListener('pointerup',serve); $('trashBtn').addEventListener('pointerup',()=>{plate=[]; renderPlate(); log('餐盤清空。')}); $('resetBtn').addEventListener('pointerup',()=>{if(confirm('確定要重新開始？')){localStorage.removeItem('bbq-mini-save'); money=0;level=1;rep=100;unlocked=['bacon'];grill=Array(6).fill(null);plate=[];orderNo=0;init();}});
+function init(){updateStats(); renderMenu(); renderGrill(); renderPlate(); makeOrder(); log('開店！先從培根開始賺錢。')}
+load(); init(); setInterval(tick,250);
+</script>
+</body>
+</html>
